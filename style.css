@@ -1,0 +1,16 @@
+#title{
+    text-align: center;
+}
+table{
+    width:100%;
+}
+tr{
+    display:flex;
+    justify-content: space-around;
+
+    background-color: rgb(211, 202, 202);
+    
+}
+#addNewItemForm{
+    display: none;
+}

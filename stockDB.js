@@ -1,0 +1,74 @@
+const DB_NAME="billingApp";
+const STORE_NAME="stockDetails";
+const DB_VERSION=1;
+
+let db;
+
+
+function openDatabase(){
+    return new Promise((resolve,reject)=>{
+        //request to open the database
+        const request=indexedDB.open(DB_NAME,DB_VERSION);
+
+        request.onupgradeneeded =(event)=>{
+            console.log('Database upgrade needed / creation started');
+            db=event.target.result;
+            db.createObjectStore(STORE_NAME,{keyPath:"itemNo",autoIncrement:true});    
+            console.log("Object store created");
+
+        };
+        request.onsuccess=(event) =>{
+            db= event.target.result;//get database instance
+            console.log("Database opened successfully");
+            resolve(db);//Resolve the promise with the db instance
+        }
+        request.onerror=(event)=>{
+            console.error("Databas error:",event.target.errorCode);
+            reject(new Error("Failed to open Database"));
+        }
+    })
+}
+
+
+export  async function saveFormData(formData){
+    if(!db){
+        db= await openDatabase();
+    }
+    const transaction=db.transaction([STORE_NAME],'readwrite');
+    const store=transaction.objectStore(STORE_NAME);
+    console.log(formData.get("itemName"))
+    const request=store.add({
+        itemName:formData.get("itemName"),
+    
+        itemQty: Number(formData.get("ItemQty")), 
+        buyPrice: Number(formData.get("buyPrice")), 
+        sellPrice: Number(formData.get("sellPrice")) 
+    })
+
+    request.onsuccess=()=>{
+        console.log("stock details saved in database succesfully");
+    }
+    request.onerror=(event)=>{
+        console.error("error saving formdata", event.target.error);
+    }
+}
+
+
+export async function retrieveFormData(){
+    if(!db){
+        db=await openDatabase();
+    }
+    const transaction=db.transaction([STORE_NAME],"readonly");
+    const store=transaction.objectStore(STORE_NAME);
+    const request=store.getAll();
+    return new Promise((resolve,reject)=>{
+        request.onsuccess=(event)=>{
+            resolve(event.target.result)
+        }
+        request.onerror=(event)=>{
+            console.error("Error retrieving all stock items:", event.target.error);
+            reject(new Error("Failed to retrieve all stock items."));
+        }
+    })
+
+}
