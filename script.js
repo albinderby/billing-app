@@ -1,4 +1,4 @@
-import { saveFormData,retrieveFormData,deleteItem } from "./stockDB.js";
+import { saveFormData,retrieveFormData,deleteItem, editRecord} from "./stockDB.js";
 import { displayLogic } from "./display.js";
 const deleteItemFromDB=deleteItem // this is the imported function from stockDB file for delete the item from database
 const AddNewItemBtn=document.getElementById("AddNewItem");

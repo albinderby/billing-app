@@ -110,3 +110,21 @@ export async function deleteItem(deleteIndex){
 
 
 
+
+
+export async function editRecord(recodeKey,editingPropertie,newValue){
+    if(!db){
+        db=await openDatabase();
+    }
+    const transaction=db.transaction([STORE_NAME],"readwrite");
+    const objectStore=transaction.objectStore(STORE_NAME);
+    const recordRequest=objectStore.get(recodeKey);
+    recordRequest.onsuccess=(event)=>{
+        const record=event.target.result;
+        record[editingPropertie]=newValue;
+        const updateRequest=objectStore.put(record);
+        updateRequest.onsuccess=()=>{
+            console.log(editingPropertie+"updated")
+        }
+        }
+}
