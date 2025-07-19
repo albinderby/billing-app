@@ -25,7 +25,7 @@ export async function displayLogic(){
         const buyPrice=document.createElement("td");
         const sellPrice=document.createElement("td");
 
-        itemNo.textContent=allItem[i].itemNo;
+        itemNo.textContent=i+1;
         itemName.textContent=""+allItem[i].itemName
         qty.textContent=allItem[i].itemQty;
         buyPrice.textContent=allItem[i].buyPrice;
