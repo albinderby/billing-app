@@ -81,14 +81,9 @@ export async function retrieveFormData(){
 }
 
 export async function deleteItem(deleteIndex){
-    console.log("##### A: Entering deleteItem function #####"); 
     if(!db){
         db= await openDatabase();
     }
-    setTimeout(() => {
-        console.log("DEBUG: deleteIndex value is:", deleteIndex); 
-    }, 3000);
-    console.log("DEBUG: deleteIndex value is:", deleteIndex); 
     const transaction=db.transaction([STORE_NAME],"readwrite");
     const store=transaction.objectStore(STORE_NAME);
     const index=store.index("itemNameIndex");
