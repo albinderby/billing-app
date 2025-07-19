@@ -12,8 +12,17 @@ function openDatabase(){
 
         request.onupgradeneeded =(event)=>{
             console.log('Database upgrade needed / creation started');
+            let objectStore;
             db=event.target.result;
-            db.createObjectStore(STORE_NAME,{keyPath:"itemNo",autoIncrement:true});    
+                    if(!db.objectStoreNames.contains(STORE_NAME)){
+                 objectStore=db.createObjectStore(STORE_NAME,{keyPath:"itemNo",autoIncrement:true}); 
+                    }else{
+                        objectStore=event.currentTarget.transaction.objectStore(STORE_NAME);
+                    }
+                    if(!objectStore.indexNames.contains("itemNameIndex")){
+                    objectStore.createIndex("itemNameIndex","itemName",{unique:false}); 
+                    }
+
             console.log("Object store created");
 
         };
@@ -29,7 +38,6 @@ function openDatabase(){
     })
 }
 
-
 export  async function saveFormData(formData){
     if(!db){
         db= await openDatabase();
@@ -39,7 +47,6 @@ export  async function saveFormData(formData){
     console.log(formData.get("itemName"))
     const request=store.add({
         itemName:formData.get("itemName"),
-    
         itemQty: Number(formData.get("ItemQty")), 
         buyPrice: Number(formData.get("buyPrice")), 
         sellPrice: Number(formData.get("sellPrice")) 
@@ -72,3 +79,39 @@ export async function retrieveFormData(){
     })
 
 }
+
+export async function deleteItem(deleteIndex){
+    console.log("##### A: Entering deleteItem function #####"); 
+    if(!db){
+        db= await openDatabase();
+    }
+    setTimeout(() => {
+        console.log("DEBUG: deleteIndex value is:", deleteIndex); 
+    }, 3000);
+    console.log("DEBUG: deleteIndex value is:", deleteIndex); 
+    const transaction=db.transaction([STORE_NAME],"readwrite");
+    const store=transaction.objectStore(STORE_NAME);
+    const index=store.index("itemNameIndex");
+    const request=index.get(deleteIndex);
+
+    request.onsuccess=(event)=>{
+        console.log(event.target.result);
+        if(event.target.result){
+            const request=store.delete(event.target.result.itemNo);
+            request.onsuccess=(event)=>{
+                console.log(event.target);
+            }
+            request.onerror=(event)=>{
+                console.error(event.target.error);
+            }
+        }else console.log("item not found to delete");
+       
+    }
+    request.onerror=(event)=>{
+        console.error(event.target.error);
+    }
+
+}
+
+
+

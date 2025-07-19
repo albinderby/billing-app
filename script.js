@@ -1,8 +1,10 @@
-import { saveFormData,retrieveFormData } from "./stockDB.js";
+import { saveFormData,retrieveFormData,deleteItem } from "./stockDB.js";
 import { displayLogic } from "./display.js";
-
+const deleteItemFromDB=deleteItem // this is the imported function from stockDB file for delete the item from database
 const AddNewItemBtn=document.getElementById("AddNewItem");
 const newItemForm=document.getElementById("addNewItemForm")
+const deleteBtn=document.getElementById("deleteButton");
+const deletingForm=document.getElementById("deletingForm");
 
 let myDisplayManager;
 (async function setUpDisplay(){
@@ -14,7 +16,6 @@ AddNewItemBtn.addEventListener("click",()=>{
     newItemForm.style.display="block";
 })
 
-
 newItemForm.addEventListener("submit",(event)=>{
     event.preventDefault();
     const formData=new FormData(newItemForm);
@@ -23,6 +24,13 @@ newItemForm.addEventListener("submit",(event)=>{
     myDisplayManager.latestAddedItemDisplay();
 })
 
-
+deleteBtn.addEventListener("click",()=>{
+    event.preventDefault();
+    deletingForm.style.display="block";
+    deletingForm.addEventListener("submit",()=>{
+     const formData=new FormData(deletingForm);
+     deleteItemFromDB(formData.get("deletingItem"));
+ })
+ })
 
 
